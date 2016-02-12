@@ -28,10 +28,10 @@ def filterLifetime(time, intensity, cutoff = 10000, order = 7):
 
 
     # Filter requirements.
-#     order = 7
+    # order = 7
     # fs = int(len(time)/ ((max(time)*1E-3)))       # sample rate, Hz
     fs = int(1/(0.008176*1E-3))
-#     cutoff = 10000  # desired cutoff frequency of the filter, Hz
+    # cutoff = 10000  # desired cutoff frequency of the filter, Hz
 
     # Get the filter coefficients so we can check its frequency response.
     b, a = butter_lowpass(cutoff, fs, order)
