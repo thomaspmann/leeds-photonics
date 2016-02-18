@@ -1,6 +1,6 @@
 def filterLifetime(time, intensity, cutoff = 10000, order = 7):
-    
-    """Function to apply a low pass filter to a decay signal.
+    """
+    Function to apply a low pass filter to a decay signal.
     
     cutoff: desired cutoff frequency of the filter, Hz
     order: butterworth filter order
@@ -8,10 +8,11 @@ def filterLifetime(time, intensity, cutoff = 10000, order = 7):
     returns 
             time: time array, unmodified 
             y: the filtered data 
+
+    http://tinyurl.com/gqqmsdz
     """
     
-    # http://stackoverflow.com/questions/25191620/creating-lowpass-filter-in-scipy-understanding-methods-and-units
-
+    
     from scipy.signal import butter, lfilter, freqz
     import matplotlib.pyplot as plt
 
