@@ -11,5 +11,5 @@ setup(
     download_url='https://github.com/mn14tm/lifetime/tarball/0.1',
     keywords='fluorescence fitting lifetime fitting',
     packages=['lifetime'],
-    install_requires=['numpy', 'scipy']
+    install_requires=find_packages()
 )
