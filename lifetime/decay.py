@@ -2,7 +2,6 @@ import numpy as np
 from scipy.optimize import curve_fit, minimize
 
 
-# Model Function
 def decay_fn(t, a, tau, c):
     """Mono-exponential fitting function. t is the time."""
     return a * np.exp(-t / tau) + c
@@ -10,21 +9,23 @@ def decay_fn(t, a, tau, c):
 
 def error_fn(p, x, y):
     """Sum-Squared-Error Cost Function for minimize_fit routine."""
-    return sum((y - decay_fn(x,*p))**2)
+    return sum((y - decay_fn(x, *p))**2)
 
 
-def prepare_data(x, y, reject=0):
+def prepare_data(x, y, reject_start=0, reject_end=0):
     """Prepare data before fitting."""
-    # Reject Time
-    ind = np.where(x >= reject)
-    x = x[ind]
-    y = y[ind]
 
     # Subtract baseline noise
     y -= min(y)
 
     # Normalise
     y /= y[0]
+
+    # Reject Time
+    ind = np.where((x >= reject_start) & (x < x[-1] - reject_end))
+    x = x[ind]
+    y = y[ind]
+
     return x, y
 
 
@@ -35,8 +36,9 @@ def fit_decay(x, y):
     """
 
     # Guess initial fitting parameters
-    t_loc = np.where(y <= y[0] / np.e)
-    p0 = [1, x[t_loc[0][0]], 0]
+    t_loc = np.where(y <= y[0] / np.e)[0][0]
+    tau = x[t_loc]
+    p0 = [1, tau, 0]
 
     # Fitting
     try:
@@ -51,21 +53,19 @@ def fit_decay(x, y):
     return popt
 
 
-def minimize_fit(x, y):
+def minimize_fit(x, y, method='nelder-mead'):
     """
     Fit data using scipy's minimize routine.
     Return fitting parameters [a, tau, c].
     """
 
     # Guess initial fitting parameters
-    t_loc = np.where(y <= y[0] / np.e)
-    tau = x[t_loc[0][0]]
+    t_loc = np.where(y <= y[0] / np.e)[0][0]
+    tau = x[t_loc]
     p0 = np.array([max(y), tau, min(y)])
 
     res = minimize(error_fn, p0, args=(x, y),
-                   method='nelder-mead',
-                   options={'xtol': 1e-8, 'disp': True}
+                   method=method,
+                   options={'xtol': 1e-8, 'disp': False}
                    )
-    print(res.x)
-
-    return res
+    return res.x
