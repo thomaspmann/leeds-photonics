@@ -1,18 +1,17 @@
-def filterLifetime(time, intensity, cutoff = 10000, order = 7):
+def filterLifetime(time, intensity, cutoff=10000, order=7):
     """
-    Function to apply a low pass filter to a decay signal.
-    
+    Function to apply a low pass filter to a fitting signal.
+
     cutoff: desired cutoff frequency of the filter, Hz
     order: butterworth filter order
-    
-    returns 
-            time: time array, unmodified 
-            y: the filtered data 
+
+    returns
+            time: time array, unmodified
+            y: the filtered data
 
     http://tinyurl.com/gqqmsdz
     """
-    
-    
+
     from scipy.signal import butter, lfilter, freqz
     import matplotlib.pyplot as plt
 
@@ -27,11 +26,10 @@ def filterLifetime(time, intensity, cutoff = 10000, order = 7):
         y = lfilter(b, a, data)
         return y
 
-
     # Filter requirements.
     # order = 7
     # fs = int(len(time)/ ((max(time)*1E-3)))       # sample rate, Hz
-    fs = int(1/(0.008176*1E-3))
+    fs = int(1 / (0.008176 * 1E-3))
     # cutoff = 10000  # desired cutoff frequency of the filter, Hz
 
     # Get the filter coefficients so we can check its frequency response.
@@ -40,20 +38,18 @@ def filterLifetime(time, intensity, cutoff = 10000, order = 7):
     # Plot the frequency response.
     w, h = freqz(b, a, worN=8000)
     plt.subplot(2, 1, 1)
-    plt.plot(0.5*fs*w/np.pi, np.abs(h), 'b')
-    plt.plot(cutoff, 0.5*np.sqrt(2), 'ko')
+    plt.plot(0.5 * fs * w / np.pi, np.abs(h), 'b')
+    plt.plot(cutoff, 0.5 * np.sqrt(2), 'ko')
     plt.axvline(cutoff, color='k')
-    plt.xlim(0, 0.5*fs)
+    plt.xlim(0, 0.5 * fs)
     plt.title("Lowpass Filter Frequency Response")
     plt.xlabel('Frequency [Hz]')
     plt.grid()
 
-
     # Demonstrate the use of the filter.
     # First make some data to be filtered.
-    n = len(time) # total number of samples
+    n = len(time)  # total number of samples
     data = intensity
-
 
     # Filter the data, and plot both the original and filtered signals.
     y = butter_lowpass_filter(data, cutoff, fs, order)
@@ -67,6 +63,5 @@ def filterLifetime(time, intensity, cutoff = 10000, order = 7):
 
     plt.subplots_adjust(hspace=0.35)
     plt.show()
-    
-    return time, y
 
+    return time, y
