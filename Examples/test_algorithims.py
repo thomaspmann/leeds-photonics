@@ -39,3 +39,5 @@ if __name__ == "__main__":
     # plt.plot(x, lm.decay_fn(x, *p_init), label='Un-noised data')
     # plt.plot(x, lm.decay_fn(x, *p), label='Fit')
     # plt.legend()
+    # plt.xlabel('Time (ms)')
+    # plt.ylabel('Intensity (A.U.)')
