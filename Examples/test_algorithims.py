@@ -1,7 +1,7 @@
 import numpy as np
-import lifetime.decay as lm
-import matplotlib.pyplot as plt
 from tqdm import tqdm
+
+import lifetime.decay as lm
 
 
 def create_data(p_init, std=.0):
