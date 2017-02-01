@@ -3,57 +3,45 @@ from scipy.optimize import curve_fit, minimize
 
 
 def shift_time(x, length):
-    """Shift time axis to the left. USed to account for pump"""
-    # Shift time axis
+    """Shift time axis to the left by length. Used to account for pump"""
     x -= length
     return x
 
 
 def reject_time(x, y, reject_start=0, reject_end=0):
-    # Reject Time
+    """Reject x,y data before 'reject_start' or after 'reject_end' time """
     ind = np.where((x >= reject_start) & (x < x[-1] - reject_end))
-    x = x[ind]
-    y = y[ind]
-    return x, y
+    return x[ind], y[ind]
 
 
-def normalise(y, point="max"):
+def normalise(y, ref="max"):
+    """Normalise array y with respect to the ref point (either 'max' or 'start')"""
     # Subtract baseline noise
     y -= min(y)
-    # Normalise to start value
-    if point == "max":
+    # Normalise
+    if ref == "max":
         y /= max(y)
-    elif point == "start":
+    elif ref == "start":
         y /= y[0]
     else:
         raise ValueError("point option must be either 'max' or 'start'.")
     return y
 
 
-def remove_spectrum_noise(x, y, tail_lower=1430, tail_upper=1670):
-    """Normalise x to maximum value after removing baseline noise from tail averages"""
-    loc = np.where((x < tail_lower) | (x > tail_upper))
-    y -= np.mean(y[loc])
-    return x, y
-
-
 def decay_fn(t, a, tau, c):
-    """Mono-exponential fitting function. t is the time."""
+    """Single-exponential decay fluorescence function. t is the time."""
     return a * np.exp(-t / tau) + c
-
-
-def decay_fn2(t, a1, tau1, a2, tau2, c):
-    """Duo-exponential fitting function. t is the time."""
-    return a1 * np.exp(-t / tau1) + a2 * np.exp(-t / tau2) + c
 
 
 def fit_decay(x, y):
     """
-    Function to fit the data, y with a mono-exponential decay using Levenberg-Marquardt algorithm.
-    Return fitting parameters [a, tau, c].
+    Function to fit data with a single-exp. decay using Levenberg-Marquardt algorithm.
+    :param x: time array
+    :param y: intensity array
+    :param fn: decay function to fit
+    :return: fluorescence parameters popt [a, tau, c]
     """
-
-    # Guess initial fitting parameters
+    # Guess initial fluorescence parameters
     t_loc = np.where(y <= y[0] / np.e)[0][0]
     tau = x[t_loc]
     p0 = [max(y), tau, min(y)]
@@ -71,13 +59,20 @@ def fit_decay(x, y):
     return popt
 
 
+def decay_fn2(t, a1, tau1, a2, tau2, c):
+    """Double-exponential decay fluorescence function. t is the time."""
+    return a1 * np.exp(-t / tau1) + a2 * np.exp(-t / tau2) + c
+
+
 def fit_decay2(x, y):
     """
-    Function to fit the data, y with a mono-exponential decay using Levenberg-Marquardt algorithm.
-    Return fitting parameters [a, tau, c].
+    Function to fit data with a double-exp. decay using Levenberg-Marquardt algorithm.
+    :param x: time array
+    :param y: intensity array
+    :param fn: decay function to fit
+    :return: fluorescence parameters popt [a1, tau1, a2, tau2, c]
     """
-
-    # Guess initial fitting parameters
+    # Guess initial fluorescence parameters
     t_loc = np.where(y <= y[0] / np.e)[0][0]
     tau = x[t_loc]
     p0 = [max(y), tau, max(y), tau/2, min(y)]
@@ -95,18 +90,25 @@ def fit_decay2(x, y):
     return popt
 
 
-def error_fn(p, x, y):
-    """Sum-Squared-Error Cost Function for minimize_fit routine."""
-    return sum((y - decay_fn(x, *p))**2)
+def error_fn(p, x, y, fn=decay_fn):
+    """
+    Sum-Squared-Error Cost Function for minimize_fit routine.
+    :param p: fn params
+    :param x: x data
+    :param y: y data
+    :param fn: function to fit
+    :return: Sum-Squared-Error
+    """
+    return sum((y - fn(x, *p))**2)
 
 
 def minimize_fit(x, y, method='nelder-mead'):
     """
     Fit data using scipy's minimize routine.
-    Return fitting parameters [a, tau, c].
+    Return fluorescence parameters [a, tau, c].
     """
 
-    # Guess initial fitting parameters
+    # Guess initial fluorescence parameters
     t_loc = np.where(y <= y[0] / np.e)[0][0]
     tau = x[t_loc]
     p0 = np.array([max(y), tau, min(y)])

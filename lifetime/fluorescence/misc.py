@@ -1,6 +1,6 @@
 def filterLifetime(time, intensity, cutoff=10000, order=7):
     """
-    Function to apply a low pass filter to a fitting signal.
+    Function to apply a low pass filter to a fluorescence signal.
 
     cutoff: desired cutoff frequency of the filter, Hz
     order: butterworth filter order
