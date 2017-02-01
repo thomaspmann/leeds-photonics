@@ -8,7 +8,7 @@ Installation Information from PyPI
 
 You can install the program with a simple:
 ```
-pip install picoscope
+pip install photonics
 ```
 
 
