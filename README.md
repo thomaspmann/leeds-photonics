@@ -1,7 +1,10 @@
 # lifetime
 
 ===========
-This is a Python 3+ library for the fitting fluorescence lifetime data.
+This is a Python 3+ library for the Applied Photonics group at the University of Leeds.
+
+Contains:
+* Fluorescence fitting algorithms for spectra and time resolved decay measurements
 
 Installation Information from PyPI
 ----------------------------------
