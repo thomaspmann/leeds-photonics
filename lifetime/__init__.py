@@ -1,2 +1,1 @@
-from .decay import *
-from .spectrum import *
+from .spectrometer import *

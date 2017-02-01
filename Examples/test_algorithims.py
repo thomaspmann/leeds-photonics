@@ -1,7 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 
-import lifetime.decay as lm
+import lifetime.spectrometer as lm
 
 
 def create_data(p_init, std=.0):
