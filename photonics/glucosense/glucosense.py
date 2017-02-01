@@ -42,7 +42,7 @@ def getLifetime(time, intensity, sample, name, rejectTimeStart, rejectTimeEnd,
         perr = np.sqrt(np.diag(pcov))  # Error in coefficients to 1 std.
 
         tau = popt[1]  # Lifetime (ms)
-        tauErr = perr[1]  # Error in lifetime
+        tauErr = perr[1]  # Error in photonics
 
         # Chi Square Test
         from scipy.stats import chisquare
@@ -271,4 +271,4 @@ def loadFolder(folder='', plotFit=True, saveFig=False,
 
     print('\nDone!\n')
 
-    return {'lifetime': lifetime, 'standd': standd, 'timestamps': timestamps, 'concentration': concentration}
+    return {'photonics': lifetime, 'standd': standd, 'timestamps': timestamps, 'concentration': concentration}

@@ -1,7 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 
-import lifetime.fluorescence as lm
+import photonics.fluorescence as lm
 
 
 def create_data(p_init, std=.0):
