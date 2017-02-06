@@ -6,6 +6,8 @@ This is a Python 3+ library for the Applied Photonics group at the University of
 Contains:
 * Fluorescence fitting algorithms for spectra and time resolved decay measurements
 
+See "Examples" folder for scripts that use the functions in this module.
+
 Installation Information from PyPI
 ----------------------------------
 
