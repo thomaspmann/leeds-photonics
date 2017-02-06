@@ -118,3 +118,58 @@ def minimize_fit(x, y, method='nelder-mead'):
                    options={'xtol': 1e-8, 'disp': False}
                    )
     return res.x
+
+
+def chi2(x, y, fn, popt):
+    """
+    Normalised chi-squared value.
+    For derivation see pgs. 19-20 "Topics in Fluorescence Spectroscopy, Volume 1" by Lakowicz.
+    :param x: x data
+    :param y: y data
+    :param fn: fitted function
+    :param popt: parameters for fitted function
+    :return: Normalised chi-squared value
+    """
+    residuals = y - fn(x, *popt)
+    std = np.std(residuals)
+    return sum((residuals / std) ** 2) / (len(y) - len(popt))
+
+
+def plot_decay(x, y, fn, popt, log=True):
+    import matplotlib.pyplot as plt
+
+    fig, (ax1, ax2) = plt.subplots(2, sharex=True)
+
+    ax1.set_ylabel('Intensity (A.U.)')
+    ax1.plot(x, y, '.', alpha=0.6, label="Original Noised Data")
+    ax1.plot(x, fn(x, *popt), label="Fitted Curve")
+    ax1.legend()
+    if log:
+        ax1.set_yscale('log')
+
+    residuals = y - fn(x, *popt)
+    # std = np.std(residuals)
+    ax2.set_ylabel('Residuals (Std. Dev)')
+    ax2.plot(x, residuals / np.std(residuals))
+    ax2.axhline(0, color='k')
+    ax2.set_xlabel('Time (ms)')
+
+    chisq = chi2(x, y, fn, popt)
+    ax1.set_title('Chisq = {0:.3f}'.format(chisq))
+    plt.show()
+
+    return fig
+
+
+def remove_spectrum_noise(x, y, lb=1430, ub=1670):
+    """
+    Remove noise from spectrum measurement by averaging noise in tails.
+    :param x: Wavelength array
+    :param y: Intensity array
+    :param lb: lower bound of tail below which to average
+    :param ub: upper bound of tail above which to average
+    :return: Noise free spectrum intensity, y
+    """
+    loc = np.where((x < lb) | (x > ub))
+    y -= np.mean(y[loc])
+    return y

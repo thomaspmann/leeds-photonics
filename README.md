@@ -44,4 +44,3 @@ Contributing
 3. Commit to your new branch.
 4. Add yourself to the authors/acknowledgements (whichever you find appropriate).
 5. Submit a pull request.
-0

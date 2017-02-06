@@ -12,4 +12,4 @@ test_block_file.dat
 *.py~
 build/
 dist/
-lifetime.egg-info/
+photonics.egg-info/
