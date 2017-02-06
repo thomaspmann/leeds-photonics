@@ -1,3 +1,5 @@
+import numpy as np
+
 def filterLifetime(time, intensity, cutoff=10000, order=7):
     """
     Function to apply a low pass filter to a fluorescence signal.

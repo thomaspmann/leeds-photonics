@@ -136,6 +136,15 @@ def chi2(x, y, fn, popt):
 
 
 def plot_decay(x, y, fn, popt, log=True):
+    """
+    Plot a fluorescence decay with the resiuals and chisq value of the fit.
+    :param x: x data
+    :param y: y data
+    :param fn: function to fit
+    :param popt: parameters to the function
+    :param log: (bool) whether to use a log plot for the decay
+    :return: fig handle
+    """
     import matplotlib.pyplot as plt
 
     fig, (ax1, ax2) = plt.subplots(2, sharex=True)
@@ -157,7 +166,6 @@ def plot_decay(x, y, fn, popt, log=True):
     chisq = chi2(x, y, fn, popt)
     ax1.set_title('Chisq = {0:.3f}'.format(chisq))
     plt.show()
-
     return fig
 
 
