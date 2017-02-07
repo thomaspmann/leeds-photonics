@@ -151,7 +151,6 @@ def plot_decay(x, y, fn, popt, log=True, norm=False):
     :return: fig handle
     """
     import matplotlib.pyplot as plt
-    from matplotlib import gridspec
 
     chisq = chi2(x, y, fn, popt)
     residuals = y - fn(x, *popt)
@@ -163,24 +162,21 @@ def plot_decay(x, y, fn, popt, log=True, norm=False):
         y /= ref
         y_pred /= ref
 
-    fig = plt.figure()
-    gs = gridspec.GridSpec(2, 1, height_ratios=[3, 1])
-    ax1 = plt.subplot(gs[0])
-    ax2 = plt.subplot(gs[1])
+    fig, (ax1, ax2) = plt.subplots(2, sharex=True, gridspec_kw={'height_ratios': [3, 1]})
 
     ax1.set_title('Chisq = {0:.3f}'.format(chisq))
-    ax1.set_xlabel('Time (ms)')
     ax1.set_ylabel('Intensity (A.U.)')
     ax1.plot(x, y, label="Original Noised Data")
     ax1.plot(x, y_pred, label="Fitted Curve")
     ax1.legend()
+
     if log:
         ax1.set_yscale('log')
-
+    ax2.set_xlabel('Time (ms)')
     ax2.set_ylabel('Std. Dev')
     ax2.plot(x, residuals)
     ax2.axhline(0, color='k')
-    ax2.set_xticklabels([])
+
     plt.tight_layout()
     plt.show()
     return fig
