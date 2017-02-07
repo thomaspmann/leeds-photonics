@@ -210,5 +210,6 @@ def plot_spectrum(x, y, norm=False):
     ax.plot(x, y)
     plt.xlabel('Wavelength (nm)')
     plt.ylabel('Intensity (A.U.)')
+    plt.tight_layout()
     plt.show()
     return fig
