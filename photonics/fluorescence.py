@@ -130,12 +130,16 @@ def chi2(x, y, fn, popt):
     :param popt: parameters for fitted function
     :return: Normalised chi-squared value
     """
+    if np.any(y) == 0:
+        raise ValueError("Chi2 can't be evaluated when one of the y values is equal to zero. "
+                         "Try not normalising the data.")
     residuals = y - fn(x, *popt)
-    std = np.std(residuals)
+    std = np.sqrt(y)
+
     return sum((residuals / std) ** 2) / (len(y) - len(popt))
 
 
-def plot_decay(x, y, fn, popt, log=True):
+def plot_decay(x, y, fn, popt, log=True, norm=False):
     """
     Plot a fluorescence decay with the resiuals and chisq value of the fit.
     :param x: x data
@@ -147,24 +151,29 @@ def plot_decay(x, y, fn, popt, log=True):
     """
     import matplotlib.pyplot as plt
 
+    chisq = chi2(x, y, fn, popt)
+    residuals = y - fn(x, *popt)
+    residuals /= np.std(residuals)
+    y_pred = fn(x, *popt)
+    if norm:
+        ref = y[0]
+        y /= ref
+        y_pred /= ref
+
     fig, (ax1, ax2) = plt.subplots(2, sharex=True)
+    ax1.set_title('Chisq = {0:.3f}'.format(chisq))
 
     ax1.set_ylabel('Intensity (A.U.)')
-    ax1.plot(x, y, '.', alpha=0.6, label="Original Noised Data")
-    ax1.plot(x, fn(x, *popt), label="Fitted Curve")
+    ax1.plot(x, y, label="Original Noised Data")
+    ax1.plot(x, y_pred, label="Fitted Curve")
     ax1.legend()
     if log:
         ax1.set_yscale('log')
 
-    residuals = y - fn(x, *popt)
-    # std = np.std(residuals)
     ax2.set_ylabel('Residuals (Std. Dev)')
-    ax2.plot(x, residuals / np.std(residuals))
+    ax2.plot(x, residuals)
     ax2.axhline(0, color='k')
     ax2.set_xlabel('Time (ms)')
-
-    chisq = chi2(x, y, fn, popt)
-    ax1.set_title('Chisq = {0:.3f}'.format(chisq))
     plt.show()
     return fig
 
