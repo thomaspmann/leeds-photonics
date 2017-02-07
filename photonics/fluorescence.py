@@ -147,6 +147,7 @@ def plot_decay(x, y, fn, popt, log=True, norm=False):
     :param fn: function to fit
     :param popt: parameters to the function
     :param log: (bool) whether to use a log plot for the decay
+    :param norm: (bool) Normlaise the output graph
     :return: fig handle
     """
     import matplotlib.pyplot as plt
