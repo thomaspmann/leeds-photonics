@@ -151,19 +151,25 @@ def plot_decay(x, y, fn, popt, log=True, norm=False):
     :return: fig handle
     """
     import matplotlib.pyplot as plt
+    from matplotlib import gridspec
 
     chisq = chi2(x, y, fn, popt)
     residuals = y - fn(x, *popt)
-    residuals /= np.std(residuals)
+    residuals /= np.sqrt(y)
+
     y_pred = fn(x, *popt)
     if norm:
         ref = y[0]
         y /= ref
         y_pred /= ref
 
-    fig, (ax1, ax2) = plt.subplots(2, sharex=True)
-    ax1.set_title('Chisq = {0:.3f}'.format(chisq))
+    fig = plt.figure()
+    gs = gridspec.GridSpec(2, 1, height_ratios=[3, 1])
+    ax1 = plt.subplot(gs[0])
+    ax2 = plt.subplot(gs[1])
 
+    ax1.set_title('Chisq = {0:.3f}'.format(chisq))
+    ax1.set_xlabel('Time (ms)')
     ax1.set_ylabel('Intensity (A.U.)')
     ax1.plot(x, y, label="Original Noised Data")
     ax1.plot(x, y_pred, label="Fitted Curve")
@@ -171,10 +177,11 @@ def plot_decay(x, y, fn, popt, log=True, norm=False):
     if log:
         ax1.set_yscale('log')
 
-    ax2.set_ylabel('Residuals (Std. Dev)')
+    ax2.set_ylabel('Std. Dev')
     ax2.plot(x, residuals)
     ax2.axhline(0, color='k')
-    ax2.set_xlabel('Time (ms)')
+    ax2.set_xticklabels([])
+    plt.tight_layout()
     plt.show()
     return fig
 
