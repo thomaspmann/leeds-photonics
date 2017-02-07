@@ -191,3 +191,17 @@ def remove_spectrum_noise(x, y, lb=1430, ub=1670):
     loc = np.where((x < lb) | (x > ub))
     y -= np.mean(y[loc])
     return y
+
+
+def plot_spectrum(x, y, norm=False):
+    import matplotlib.pyplot as plt
+
+    if norm:
+        y = normalise(y)
+
+    fig, ax = plt.subplots(1)
+    ax.plot(x, y)
+    plt.xlabel('Wavelength (nm)')
+    plt.ylabel('Intensity (A.U.)')
+    plt.show()
+    return fig
