@@ -33,18 +33,19 @@ def decay_fn(t, a, tau, c):
     return a * np.exp(-t / tau) + c
 
 
-def fit_decay(x, y):
+def fit_decay(x, y, p0=None):
     """
     Function to fit data with a single-exp. decay using Levenberg-Marquardt algorithm.
     :param x: time array
     :param y: intensity array
-    :param fn: decay function to fit
+    :param p0: (Optional) initial guess for fitting parameters [a, tau, c].
     :return: fluorescence parameters popt [a, tau, c]
     """
     # Guess initial fluorescence parameters
-    t_loc = np.where(y <= y[0] / np.e)[0][0]
-    tau = x[t_loc]
-    p0 = [max(y), tau, min(y)]
+    if p0 is None:
+        t_loc = np.where(y <= y[0] / np.e)[0][0]
+        tau = x[t_loc]
+        p0 = [max(y), tau, min(y)]
 
     # Fitting
     try:
@@ -130,7 +131,7 @@ def chi2(x, y, fn, popt):
     :param popt: parameters for fitted function
     :return: Normalised chi-squared value
     """
-    if np.any(y) == 0:
+    if min(y) <= 0:
         raise ValueError("Chi2 can't be evaluated when one of the y values is equal to zero. "
                          "Try not normalising the data.")
     residuals = y - fn(x, *popt)
