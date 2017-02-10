@@ -59,9 +59,9 @@ def fit_decay(x, y, p0=None, print_out=True):
         # Print results in a table
         if print_out:
             headers = ["A", "tau", "C", "Chisq"]
-            a = u"{0:.2f} \u00B1 {1:.2f}".format(popt[0], perr[0])
-            tau = u"{0:.2f} \u00B1 {1:.2f}".format(popt[1], perr[1])
-            c = u"{0:.2f} \u00B1 {1:.2f}".format(popt[2], perr[2])
+            a = u"{0:.2f}\u00B1{1:.2f}".format(popt[0], perr[0])
+            tau = u"{0:.2f}\u00B1{1:.2f}".format(popt[1], perr[1])
+            c = u"{0:.2f}\u00B1{1:.2f}".format(popt[2], perr[2])
             chi = "{0:.3f}".format(chisq)
             table = [[a, tau, c, chi]]
             print(tabulate(table, headers=headers))
@@ -103,11 +103,11 @@ def fit_decay2(x, y, p0=None, print_out=True):
         # Print results in a table
         if print_out:
             headers = ["A_1", "tau_1", "A_2", "tau_2", "C", "Chisq"]
-            a1 = u"{0:.2f} \u00B1 {1:.2f}".format(popt[0], perr[0])
-            tau1 = u"{0:.2f} \u00B1 {1:.2f}".format(popt[1], perr[1])
-            a2 = u"{0:.2f} \u00B1 {1:.2f}".format(popt[2], perr[2])
-            tau2 = u"{0:.2f} \u00B1 {1:.2f}".format(popt[3], perr[3])
-            c = u"{0:.2f} \u00B1 {1:.2f}".format(popt[4], perr[4])
+            a1 = u"{0:.2f}\u00B1{1:.2f}".format(popt[0], perr[0])
+            tau1 = u"{0:.2f}\u00B1{1:.2f}".format(popt[1], perr[1])
+            a2 = u"{0:.2f}\u00B1{1:.2f}".format(popt[2], perr[2])
+            tau2 = u"{0:.2f}\u00B1{1:.2f}".format(popt[3], perr[3])
+            c = u"{0:.2f}\u00B1{1:.2f}".format(popt[4], perr[4])
             chi = "{0:.3f}".format(chisq)
             table = [[a1, tau1, a2, tau2, c, chi]]
             print(tabulate(table, headers=headers))
