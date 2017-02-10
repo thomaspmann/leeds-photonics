@@ -77,7 +77,7 @@ def fit_decay2(x, y, p0=None):
     if p0 is None:
         t_loc = np.where(y <= y[0] / np.e)[0][0]
         tau = x[t_loc]
-        p0 = [max(y), tau, max(y), tau / 2, min(y)]
+        p0 = [max(y), tau / 2, max(y), tau, min(y)]
 
     # Fitting
     try:
