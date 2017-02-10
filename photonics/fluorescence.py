@@ -65,7 +65,7 @@ def decay_fn2(t, a1, tau1, a2, tau2, c):
     return a1 * np.exp(-t / tau1) + a2 * np.exp(-t / tau2) + c
 
 
-def fit_decay2(x, y):
+def fit_decay2(x, y, p0=None):
     """
     Function to fit data with a double-exp. decay using Levenberg-Marquardt algorithm.
     :param x: time array
@@ -74,9 +74,10 @@ def fit_decay2(x, y):
     :return: fluorescence parameters popt [a1, tau1, a2, tau2, c]
     """
     # Guess initial fluorescence parameters
-    t_loc = np.where(y <= y[0] / np.e)[0][0]
-    tau = x[t_loc]
-    p0 = [max(y), tau, max(y), tau/2, min(y)]
+    if p0 is None:
+        t_loc = np.where(y <= y[0] / np.e)[0][0]
+        tau = x[t_loc]
+        p0 = [max(y), tau, max(y), tau / 2, min(y)]
 
     # Fitting
     try:
