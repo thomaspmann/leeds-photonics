@@ -15,10 +15,11 @@ def reject_time(x, y, reject_start=0, reject_end=0):
     return x[ind], y[ind]
 
 
-def normalise(y, ref="max"):
+def normalise(y, ref="max", noise=True):
     """Normalise array y with respect to the ref point (either 'max' or 'start')"""
     # Subtract baseline noise
-    y -= min(y)
+    if noise:
+        y -= min(y)
     # Normalise
     if ref == "max":
         y /= max(y)
@@ -161,8 +162,9 @@ def chi2(x, y, fn, popt):
     :return: Normalised chi-squared value
     """
     if min(y) <= 0:
-        raise ValueError("Chi2 can't be evaluated when one of the y values is equal to zero. "
-                         "Try not normalising the data.")
+        print("WARNING: Chi2 can't be evaluated when one of the y values is equal to zero. "
+              "Try not normalising the data.")
+        return 0
     residuals = y - fn(x, *popt)
     std = np.sqrt(y)
 
@@ -226,7 +228,7 @@ def remove_spectrum_noise(x, y, lb=1430, ub=1670):
     return y
 
 
-def plot_spectrum(x, y, norm=False):
+def plot_spectrum(x, y, norm=False, label=None):
     import matplotlib.pyplot as plt
 
     if norm:
@@ -236,6 +238,8 @@ def plot_spectrum(x, y, norm=False):
     ax.plot(x, y)
     plt.xlabel('Wavelength (nm)')
     plt.ylabel('Intensity (A.U.)')
+    if label is not None:
+        plt.legend(label)
     plt.tight_layout()
     plt.show()
     return fig
