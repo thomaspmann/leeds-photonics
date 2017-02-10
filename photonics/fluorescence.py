@@ -53,11 +53,11 @@ def fit_decay(x, y, p0=None):
         popt, pcov = curve_fit(decay_fn, x, y, p0=p0)
         # Error in coefficients to 1 std.
         perr = np.sqrt(np.diag(pcov))
-        tauErr = perr[1]
     except RuntimeError:
         print("Could not fit.")
         popt = [np.nan, np.nan, np.nan]
-    return popt
+        perr = [np.nan, np.nan, np.nan]
+    return popt, perr
 
 
 def decay_fn2(t, a1, tau1, a2, tau2, c):
@@ -85,11 +85,12 @@ def fit_decay2(x, y, p0=None):
         popt, pcov = curve_fit(decay_fn2, x, y, p0=p0)
         # Error in coefficients to 1 std.
         perr = np.sqrt(np.diag(pcov))
-        tauErr = perr[1]
     except RuntimeError:
         print("Could not fit.")
         popt = [np.nan, np.nan, np.nan, np.nan, np.nan]
-    return popt
+        popt = [np.nan, np.nan, np.nan]
+        perr = [np.nan, np.nan, np.nan]
+    return popt, perr
 
 
 def error_fn(p, x, y, fn=decay_fn):
