@@ -5,13 +5,15 @@ This is a Python 3+ library for the Applied Photonics group at the University of
 
 Contains:
 * Fluorescence fitting algorithms for spectra and time resolved decay measurements
+* CAD files for in house equipment accessories (located in 'other' folder)
 
 See "Examples" folder for scripts that use the functions in this module.
+
 
 Installation Information from PyPI
 ----------------------------------
 
-You can install the program with a simple:
+You can install the program by typing the following into cmd.exe (windows) or terminal (mac):
 ```
 pip install photonics
 ```
@@ -29,6 +31,26 @@ If you want the normal installation (e.g. copies files to Python installation) u
 ```
 python setup.py install
 ```
+
+
+A Note on Python Installation
+---------------------------------
+Modern computers have python built into them so the above commands should usually work without any other requirements. 
+
+I recommend installing Anaconda (https://www.continuum.io/downloads, Python 3.6+ version) as a package 
+manager to help keep things up to date. It also comes with a set of commonly used scientific packages so that they
+do not need to be installed individually in the future. A quickstart guide on how to use anaconda can be found at
+https://conda.io/docs/using/cheatsheet.html .
+
+For workflow, i'd advise using jupyter notebook for small exploratory coding and the IDE PyCharm for heavier stuff.
+The former can be opened by typing 
+
+```
+jupyter notebook
+```
+
+into cmd.exe or terminal. PyCharm community version can be installed at 
+https://www.jetbrains.com/pycharm/download/#section=windows for free.
 
 
 Authors, Copyright, and Thanks
