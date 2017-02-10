@@ -13,3 +13,5 @@ test_block_file.dat
 build/
 dist/
 photonics.egg-info/
+
+*/.ipynb_checkpoints/*
