@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.optimize import curve_fit, minimize
+from tabulate import tabulate
 
 
 def shift_time(x, length):
@@ -33,7 +34,7 @@ def decay_fn(t, a, tau, c):
     return a * np.exp(-t / tau) + c
 
 
-def fit_decay(x, y, p0=None):
+def fit_decay(x, y, p0=None, print_out=True):
     """
     Function to fit data with a single-exp. decay using Levenberg-Marquardt algorithm.
     :param x: time array
@@ -53,11 +54,23 @@ def fit_decay(x, y, p0=None):
         popt, pcov = curve_fit(decay_fn, x, y, p0=p0)
         # Error in coefficients to 1 std.
         perr = np.sqrt(np.diag(pcov))
+        chisq = chi2(x, y, decay_fn, popt)
+
+        # Print results in a table
+        if print_out:
+            headers = ["A", "tau", "C", "Chisq"]
+            a = u"{0:.2f} \u00B1 {1:.2f}".format(popt[0], perr[0])
+            tau = u"{0:.2f} \u00B1 {1:.2f}".format(popt[1], perr[1])
+            c = u"{0:.2f} \u00B1 {1:.2f}".format(popt[2], perr[2])
+            chi = "{0:.3f}".format(chisq)
+            table = [[a, tau, c, chi]]
+            print(tabulate(table, headers=headers))
+
     except RuntimeError:
         print("Could not fit.")
         popt = [np.nan, np.nan, np.nan]
         perr = [np.nan, np.nan, np.nan]
-    return popt, perr
+    return popt, perr, chisq
 
 
 def decay_fn2(t, a1, tau1, a2, tau2, c):
@@ -65,7 +78,7 @@ def decay_fn2(t, a1, tau1, a2, tau2, c):
     return a1 * np.exp(-t / tau1) + a2 * np.exp(-t / tau2) + c
 
 
-def fit_decay2(x, y, p0=None):
+def fit_decay2(x, y, p0=None, print_out=True):
     """
     Function to fit data with a double-exp. decay using Levenberg-Marquardt algorithm.
     :param x: time array
@@ -85,12 +98,26 @@ def fit_decay2(x, y, p0=None):
         popt, pcov = curve_fit(decay_fn2, x, y, p0=p0)
         # Error in coefficients to 1 std.
         perr = np.sqrt(np.diag(pcov))
+        chisq = chi2(x, y, decay_fn2, popt)
+
+        # Print results in a table
+        if print_out:
+            headers = ["A_1", "tau_1", "A_2", "tau_2", "C", "Chisq"]
+            a1 = u"{0:.2f} \u00B1 {1:.2f}".format(popt[0], perr[0])
+            tau1 = u"{0:.2f} \u00B1 {1:.2f}".format(popt[1], perr[1])
+            a2 = u"{0:.2f} \u00B1 {1:.2f}".format(popt[2], perr[2])
+            tau2 = u"{0:.2f} \u00B1 {1:.2f}".format(popt[3], perr[3])
+            c = u"{0:.2f} \u00B1 {1:.2f}".format(popt[4], perr[4])
+            chi = "{0:.3f}".format(chisq)
+            table = [[a1, tau1, a2, tau2, c, chi]]
+            print(tabulate(table, headers=headers))
+
     except RuntimeError:
         print("Could not fit.")
         popt = [np.nan, np.nan, np.nan, np.nan, np.nan]
         popt = [np.nan, np.nan, np.nan]
         perr = [np.nan, np.nan, np.nan]
-    return popt, perr
+    return popt, perr, chisq
 
 
 def error_fn(p, x, y, fn=decay_fn):
