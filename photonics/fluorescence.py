@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.optimize import curve_fit, minimize
 from tabulate import tabulate
+import matplotlib.pyplot as plt
 
 
 def shift_time(x, length):
@@ -28,6 +29,26 @@ def normalise(y, ref="max", noise=True):
     else:
         raise ValueError("point option must be either 'max' or 'start'.")
     return y
+
+
+def chi2(x, y, fn, popt):
+    """
+    Normalised chi-squared value.
+    For derivation see pgs. 19-20 "Topics in Fluorescence Spectroscopy, Volume 1" by Lakowicz.
+    :param x: x data
+    :param y: y data (photon counts)
+    :param fn: fitted function
+    :param popt: parameters for fitted function
+    :return: Normalised chi-squared value
+    """
+    if min(y) <= 0:
+        print("WARNING: Chi2 can't be evaluated when one of the y values is less than or equal to zero. "
+              "Data must therefore be from a photon counter.")
+        return np.nan
+    residuals = y - fn(x, *popt)
+    std = np.sqrt(y)
+
+    return sum((residuals / std) ** 2) / (len(y) - len(popt))
 
 
 def decay_fn(t, a, tau, c):
@@ -116,8 +137,7 @@ def fit_decay2(x, y, p0=None, print_out=True):
     except RuntimeError:
         print("Could not fit.")
         popt = [np.nan, np.nan, np.nan, np.nan, np.nan]
-        popt = [np.nan, np.nan, np.nan]
-        perr = [np.nan, np.nan, np.nan]
+        perr = [np.nan, np.nan, np.nan, np.nan, np.nan]
     return popt, perr, chisq
 
 
@@ -151,26 +171,6 @@ def minimize_fit(x, y, method='nelder-mead'):
     return res.x
 
 
-def chi2(x, y, fn, popt):
-    """
-    Normalised chi-squared value.
-    For derivation see pgs. 19-20 "Topics in Fluorescence Spectroscopy, Volume 1" by Lakowicz.
-    :param x: x data
-    :param y: y data
-    :param fn: fitted function
-    :param popt: parameters for fitted function
-    :return: Normalised chi-squared value
-    """
-    if min(y) <= 0:
-        print("WARNING: Chi2 can't be evaluated when one of the y values is equal to zero. "
-              "Try not normalising the data.")
-        return 0
-    residuals = y - fn(x, *popt)
-    std = np.sqrt(y)
-
-    return sum((residuals / std) ** 2) / (len(y) - len(popt))
-
-
 def plot_decay(x, y, fn, popt, log=True, norm=False):
     """
     Plot a fluorescence decay with the resiuals and chisq value of the fit.
@@ -182,8 +182,6 @@ def plot_decay(x, y, fn, popt, log=True, norm=False):
     :param norm: (bool) Normlaise the output graph
     :return: fig handle
     """
-    import matplotlib.pyplot as plt
-
     chisq = chi2(x, y, fn, popt)
     residuals = y - fn(x, *popt)
     residuals /= np.sqrt(y)
