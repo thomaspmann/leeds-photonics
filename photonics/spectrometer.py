@@ -4,9 +4,19 @@ from tabulate import tabulate
 import matplotlib.pyplot as plt
 
 
-def shift_time(x, length):
-    """Shift time axis to the left by length. Used to account for pump"""
-    x -= length
+def decay_fn(t, a, tau, c):
+    """Single-exponential decay fluorescence function. t is the time."""
+    return a * np.exp(-t / tau) + c
+
+
+def decay_fn2(t, a1, tau1, a2, tau2, c):
+    """Double-exponential decay fluorescence function. t is the time."""
+    return a1 * np.exp(-t / tau1) + a2 * np.exp(-t / tau2) + c
+
+
+def shift_time(x, dt):
+    """Shift time axis to the left by dt. Used to account for pump & lamp delay"""
+    x -= dt
     return x
 
 
@@ -33,7 +43,7 @@ def normalise(y, ref="max", noise=True):
 
 def chi2(x, y, fn, popt):
     """
-    Normalised chi-squared value.
+    Normalised chi-squared value. y data must be photon counts (not analogue signal).
     For derivation see pgs. 19-20 "Topics in Fluorescence Spectroscopy, Volume 1" by Lakowicz.
     :param x: x data
     :param y: y data (photon counts)
@@ -41,19 +51,11 @@ def chi2(x, y, fn, popt):
     :param popt: parameters for fitted function
     :return: Normalised chi-squared value
     """
-    if min(y) <= 0:
-        print("WARNING: Chi2 can't be evaluated when one of the y values is less than or equal to zero. "
-              "Data must therefore be from a photon counter.")
-        return np.nan
+    assert min(y) >= 0, ValueError("To use this function y must be >= 0 as data must be from a photon counter.")
     residuals = y - fn(x, *popt)
+    # Standard deviation for a poissonian process
     std = np.sqrt(y)
-
     return sum((residuals / std) ** 2) / (len(y) - len(popt))
-
-
-def decay_fn(t, a, tau, c):
-    """Single-exponential decay fluorescence function. t is the time."""
-    return a * np.exp(-t / tau) + c
 
 
 def fit_decay(x, y, p0=None, print_out=True):
@@ -92,12 +94,8 @@ def fit_decay(x, y, p0=None, print_out=True):
         print("Could not fit.")
         popt = [np.nan, np.nan, np.nan]
         perr = [np.nan, np.nan, np.nan]
+        chisq = np.nan
     return popt, perr, chisq
-
-
-def decay_fn2(t, a1, tau1, a2, tau2, c):
-    """Double-exponential decay fluorescence function. t is the time."""
-    return a1 * np.exp(-t / tau1) + a2 * np.exp(-t / tau2) + c
 
 
 def fit_decay2(x, y, p0=None, print_out=True):
@@ -182,7 +180,6 @@ def plot_decay(x, y, fn, popt, log=True, norm=False):
     :param norm: (bool) Normlaise the output graph
     :return: fig handle
     """
-    chisq = chi2(x, y, fn, popt)
     residuals = y - fn(x, *popt)
     residuals /= np.sqrt(y)
 
@@ -193,20 +190,17 @@ def plot_decay(x, y, fn, popt, log=True, norm=False):
         y_pred /= ref
 
     fig, (ax1, ax2) = plt.subplots(2, sharex=True, gridspec_kw={'height_ratios': [3, 1]})
-
-    ax1.set_title('Chisq = {0:.3f}'.format(chisq))
+    ax1.set_title('Chisq = {0:.3f}'.format(chi2(x, y, fn, popt)))
     ax1.set_ylabel('Intensity (A.U.)')
     ax1.plot(x, y, label="Original Noised Data")
     ax1.plot(x, y_pred, label="Fitted Curve")
     ax1.legend()
-
     if log:
         ax1.set_yscale('log')
     ax2.set_xlabel('Time (ms)')
     ax2.set_ylabel('Std. Dev')
     ax2.plot(x, residuals)
     ax2.axhline(0, color='k')
-
     plt.tight_layout()
     plt.show()
     return fig
@@ -232,7 +226,7 @@ def plot_spectrum(x, y, norm=False, label=None):
     if norm:
         y = normalise(y)
 
-    fig, ax = plt.subplots(1)
+    fig, ax = plt.subplots()
     ax.plot(x, y)
     plt.xlabel('Wavelength (nm)')
     plt.ylabel('Intensity (A.U.)')
