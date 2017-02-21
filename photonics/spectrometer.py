@@ -182,7 +182,7 @@ def plot_decay(x, y, fn, popt, log=True, norm=False):
     """
     residuals = y - fn(x, *popt)
     residuals /= np.sqrt(y)
-
+    chisq = chi2(x, y, fn, popt)
     y_pred = fn(x, *popt)
     if norm:
         ref = y[0]
@@ -190,7 +190,7 @@ def plot_decay(x, y, fn, popt, log=True, norm=False):
         y_pred /= ref
 
     fig, (ax1, ax2) = plt.subplots(2, sharex=True, gridspec_kw={'height_ratios': [3, 1]})
-    ax1.set_title('Chisq = {0:.3f}'.format(chi2(x, y, fn, popt)))
+    ax1.set_title('Chisq = {0:.3f}'.format(chisq))
     ax1.set_ylabel('Intensity (A.U.)')
     ax1.plot(x, y, label="Original Noised Data")
     ax1.plot(x, y_pred, label="Fitted Curve")
