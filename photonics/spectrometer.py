@@ -195,12 +195,12 @@ def plot_decay(x, y, fn, popt, log=True, norm=False):
     ax1.plot(x, y, label="Original Noised Data")
     ax1.plot(x, y_pred, label="Fitted Curve")
     ax1.legend()
-    if log:
-        ax1.set_yscale('log')
     ax2.set_xlabel('Time (ms)')
     ax2.set_ylabel('Std. Dev')
     ax2.plot(x, residuals)
     ax2.axhline(0, color='k')
+    if log:
+        ax1.set_yscale('log')
     plt.tight_layout()
     plt.show()
     return fig

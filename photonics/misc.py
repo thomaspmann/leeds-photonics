@@ -1,7 +1,23 @@
 import numpy as np
 
 
-def filterLifetime(time, intensity, cutoff=10000, order=7):
+def quantum_efficiency(tau1, tau2, beta21):
+    matrix = np.array([[1, 1], [beta21, 1]])
+    inv = np.linalg.inv(matrix)
+    rhs = np.array([[1 / tau1], [1 / tau2]])
+    lhs = inv @ rhs
+    rad = lhs[0][0]
+    nrad = lhs[1][0]
+    q = rad / (rad + nrad)
+
+    print('Radiative decay rate    : {:.2f} /s'.format(rad))
+    print('Non-radiative decay rate: {:.2f} /s \n'.format(nrad))
+    print('Radiative lifetime      : {:.3f} ms'.format(1e3 / rad))
+    print('Non-radiative lifetime  : {:.3f} ms'.format(1e3 / nrad))
+    print('Quantum Efficiency is {:.3%}'.format(q))
+
+
+def filter_lifetime(time, intensity, cutoff=10000, order=7):
     """
     Function to apply a low pass filter to a fluorescence signal.
 
