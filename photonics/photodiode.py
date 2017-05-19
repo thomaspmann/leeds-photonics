@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import curve_fit
 
-from .spectrometer import decay_fn, decay_fn2
+from .spectrometer import decay_fn, decay_fn2, reject_time
 
 
 def fit_decay(x, y, p0=None, print_out=True):
@@ -113,39 +113,6 @@ def plot_decay(x, y, fn, popt, log=True, norm=False):
     plt.tight_layout()
     plt.show()
     return fig
-
-
-def rise_fn(t, a, tau, c):
-    """Single-exponential rise fluorescence function. t is the time."""
-    return a - a * np.exp(-t / tau) + c
-
-
-def fit_rise(x, y, p0=None):
-    """
-    Function to fit data with a single-exp. decay using Levenberg-Marquardt algorithm.
-    :param x: time array
-    :param y: intensity array
-    :param p0: (Optional) initial guess for fitting parameters [a, tau, c].
-    :return: fluorescence parameters popt [a, tau, c]
-    """
-    # Guess initial fluorescence parameters
-    if p0 is None:
-        t_loc = np.where(y <= y[-1] / np.e)[0][0]
-        tau = x[t_loc]
-        p0 = [max(y), tau, min(y)]
-
-    # Fitting
-    try:
-        # Fit using Levenberg-Marquardt algorithm
-        popt, pcov = curve_fit(rise_fn, x, y, p0=p0)
-        # Error in coefficients to 1 std.
-        perr = np.sqrt(np.diag(pcov))
-
-    except RuntimeError:
-        print("Could not fit.")
-        popt = [np.nan, np.nan, np.nan]
-        perr = [np.nan, np.nan, np.nan]
-    return popt, perr
 
 
 def rise_fn(t, a, tau, c):
